@@ -7,13 +7,13 @@ pub use basic_gate::basic;
 fn main() {
     println!("Hack computer simulator");
     let mut dff = dff::DFlipFlop::new();
-    println!("dff.clock(0, 0) = {}", dff.clock(1, 1));
-    println!("dff.clock(1, 0) = {}", dff.clock(1, 1));
+    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
+    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
     println!("dff.clock(0, 1) = {}", dff.clock(0, 1));
     println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
     println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
     println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
-    println!("dff.clock(1, 1) = {}", dff.clock(0, 1));
+    println!("dff.clock(0, 1) = {}", dff.clock(0, 1));
     // // test mux_gate
     // println!("mux_gate(0, 1, 0) = {}", basic::mux_gate(0, 1, 0));
     // println!("mux_gate(0, 1, 1) = {}", basic::mux_gate(0, 1, 1));
