@@ -3,25 +3,19 @@ mod basic_gate;
 pub use atom_component::dff;
 pub use atom_component::nand;
 pub use basic_gate::basic;
+pub use basic_gate::combinational;
+pub use basic_gate::sequential;
 
 fn main() {
     println!("Hack computer simulator");
-    let mut dff = dff::DFlipFlop::new();
-    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
-    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
-    println!("dff.clock(0, 1) = {}", dff.clock(0, 1));
-    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
-    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
-    println!("dff.clock(1, 1) = {}", dff.clock(1, 1));
-    println!("dff.clock(0, 1) = {}", dff.clock(0, 1));
-    // // test mux_gate
-    // println!("mux_gate(0, 1, 0) = {}", basic::mux_gate(0, 1, 0));
-    // println!("mux_gate(0, 1, 1) = {}", basic::mux_gate(0, 1, 1));
-    // println!("mux_gate(1, 0, 0) = {}", basic::mux_gate(1, 0, 0));
-    // println!("mux_gate(1, 0, 1) = {}", basic::mux_gate(1, 0, 1));
-    // // test dmux_gate
-    // println!("dmux_gate(0, 0) = {:?}", basic::dmux_gate(0, 0));
-    // println!("dmux_gate(0, 1) = {:?}", basic::dmux_gate(0, 1));
-    // println!("dmux_gate(1, 0) = {:?}", basic::dmux_gate(1, 0));
-    // println!("dmux_gate(1, 1) = {:?}", basic::dmux_gate(1, 1));
+    // test bit_register
+    let mut bit_register = sequential::BitRegister::new();
+    println!("bit_register.clock(1, 1, 0) = {}", bit_register.clock(1, 1, 0));
+    println!("bit_register.clock(1, 1, 1) = {}", bit_register.clock(1, 1, 1));
+    println!("bit_register.clock(0, 0, 0) = {}", bit_register.clock(0, 0, 0));
+    println!("bit_register.clock(0, 0, 1) = {}", bit_register.clock(0, 0, 1));
+    println!("bit_register.clock(1, 0, 0) = {}", bit_register.clock(1, 0, 0));
+    println!("bit_register.clock(1, 0, 1) = {}", bit_register.clock(1, 0, 1));
+    println!("bit_register.clock(0, 1, 0) = {}", bit_register.clock(0, 1, 0));
+    println!("bit_register.clock(0, 1, 1) = {}", bit_register.clock(0, 1, 1));
 }
