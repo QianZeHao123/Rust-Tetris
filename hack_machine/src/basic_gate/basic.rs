@@ -36,3 +36,52 @@ pub fn mux_gate(input_a: u8, input_b: u8, sel: u8) -> u8 {
 pub fn dmux_gate(input: u8, sel: u8) -> (u8, u8) {
     (and_gate(input, not_gate(sel)), and_gate(input, sel))
 }
+// test dmux_gate
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_and_gate() {
+        assert_eq!(and_gate(0, 0), 0);
+        assert_eq!(and_gate(0, 1), 0);
+        assert_eq!(and_gate(1, 0), 0);
+        assert_eq!(and_gate(1, 1), 1);
+    }
+    #[test]
+    fn test_not_gate() {
+        assert_eq!(not_gate(0), 1);
+        assert_eq!(not_gate(1), 0);
+    }
+    #[test]
+    fn test_or_gate() {
+        assert_eq!(or_gate(0, 0), 0);
+        assert_eq!(or_gate(0, 1), 1);
+        assert_eq!(or_gate(1, 0), 1);
+        assert_eq!(or_gate(1, 1), 1);
+    }
+    #[test]
+    fn test_xor_gate() {
+        assert_eq!(xor_gate(0, 0), 0);
+        assert_eq!(xor_gate(0, 1), 1);
+        assert_eq!(xor_gate(1, 0), 1);
+        assert_eq!(xor_gate(1, 1), 0);
+    }
+    #[test]
+    fn test_mux_gate() {
+        assert_eq!(mux_gate(0, 0, 0), 0);
+        assert_eq!(mux_gate(0, 1, 0), 0);
+        assert_eq!(mux_gate(1, 0, 0), 1);
+        assert_eq!(mux_gate(1, 1, 0), 1);
+        assert_eq!(mux_gate(0, 0, 1), 0);
+        assert_eq!(mux_gate(0, 1, 1), 1);
+        assert_eq!(mux_gate(1, 0, 1), 0);
+        assert_eq!(mux_gate(1, 1, 1), 1);
+    }
+    #[test]
+    fn test_dmux_gate() {
+        assert_eq!(dmux_gate(0, 0), (0, 0));
+        assert_eq!(dmux_gate(0, 1), (0, 0));
+        assert_eq!(dmux_gate(1, 0), (1, 0));
+        assert_eq!(dmux_gate(1, 1), (0, 1));
+    }
+}
