@@ -8,6 +8,7 @@
 
 // from 0 to 1: clockUp --> Get Input, state = input
 // from 1 to 0: clockDown --> Output, output = state
+
 pub struct DFlipFlop {
     state: u8,
 }
