@@ -59,6 +59,27 @@ pub fn mux4way16_gate(
     result
 }
 
+pub fn mux8way16_gate(
+    input_a: [u8; 16],
+    input_b: [u8; 16],
+    input_c: [u8; 16],
+    input_d: [u8; 16],
+    input_e: [u8; 16],
+    input_f: [u8; 16],
+    input_g: [u8; 16],
+    input_h: [u8; 16],
+    sel: [u8; 3],
+) -> [u8; 16] {
+    let ab = mux16_gate(input_a, input_b, sel[0]);
+    let cd = mux16_gate(input_c, input_d, sel[0]);
+    let ef = mux16_gate(input_e, input_f, sel[0]);
+    let gh = mux16_gate(input_g, input_h, sel[0]);
+    let abcd = mux16_gate(ab, cd, sel[1]);
+    let efgh = mux16_gate(ef, gh, sel[1]);
+    let result = mux16_gate(abcd, efgh, sel[2]);
+    result
+}
+
 pub fn dmux4way_gate(input: u8, sel: [u8; 2]) -> [u8; 4] {
     let mut result = [0; 4];
     let (a, b) = dmux_gate(input, sel[0]);
@@ -154,8 +175,32 @@ mod tests {
     }
 
     #[test]
-    fn test_mux4way16_gate(){
-        assert_eq!(mux4way16_gate([0; 16], [0; 16], [0; 16], [0; 16], [0, 0]), [0; 16]);
-        assert_eq!(mux4way16_gate([0; 16], [0; 16], [0; 16], [0; 16], [0, 1]), [0; 16]);
+    fn test_mux4way16_gate() {
+        assert_eq!(
+            mux4way16_gate([0; 16], [0; 16], [0; 16], [0; 16], [0, 0]),
+            [0; 16]
+        );
+        assert_eq!(
+            mux4way16_gate([0; 16], [0; 16], [0; 16], [0; 16], [0, 1]),
+            [0; 16]
+        );
+    }
+
+    #[test]
+    fn test_mux8way16_gate() {
+        assert_eq!(
+            mux8way16_gate(
+                [0; 16],
+                [0; 16],
+                [0; 16],
+                [1; 16],
+                [0; 16],
+                [0; 16],
+                [0; 16],
+                [0; 16],
+                [1, 1, 0]
+            ),
+            [1; 16]
+        );
     }
 }
