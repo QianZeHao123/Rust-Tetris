@@ -2,7 +2,7 @@
 // clockUp: if (load == 1), then state = input
 // clockDown: output = state
 
-pub use crate::atom_component::dff;
+use crate::atom_component::dff;
 use crate::basic_gate::basic::mux_gate;
 
 pub struct BitRegister {

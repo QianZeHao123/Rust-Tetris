@@ -1,5 +1,5 @@
 // mod atom_component;
-pub use crate::atom_component::nand;
+use crate::atom_component::nand;
 
 pub fn and_gate(input_a: u8, input_b: u8) -> u8 {
     nand::nand_gate(
