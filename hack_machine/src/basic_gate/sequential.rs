@@ -24,6 +24,32 @@ impl BitRegister {
         self.state
     }
 }
+// 16 bit register
+pub struct Register {
+    bit_register: Vec<BitRegister>, // Changed to Vec for dynamic allocation
+    state: [u8; 16],
+}
+
+impl Register {
+    pub fn new() -> Register {
+        let mut bit_registers = Vec::with_capacity(16);
+        for _ in 0..16 {
+            bit_registers.push(BitRegister::new());
+        }
+
+        Register {
+            bit_register: bit_registers,
+            state: [0; 16],
+        }
+    }
+
+    pub fn clock(&mut self, input: [u8; 16], load: u8, clock: u8) -> [u8; 16] {
+        for i in 0..16 {
+            self.state[i] = self.bit_register[i].clock(input[i], load, clock);
+        }
+        self.state
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -31,13 +57,13 @@ mod tests {
     #[test]
     fn test_bit_register() {
         let mut bit_register = BitRegister::new();
-        println!("bit_register.clock(1, 1, 0) = {}", bit_register.clock(1, 1, 0));
-        println!("bit_register.clock(1, 1, 1) = {}", bit_register.clock(1, 1, 1));
-        println!("bit_register.clock(0, 0, 0) = {}", bit_register.clock(0, 0, 0));
-        println!("bit_register.clock(0, 0, 1) = {}", bit_register.clock(0, 0, 1));
-        println!("bit_register.clock(1, 0, 0) = {}", bit_register.clock(1, 0, 0));
-        println!("bit_register.clock(1, 0, 1) = {}", bit_register.clock(1, 0, 1));
-        println!("bit_register.clock(0, 1, 0) = {}", bit_register.clock(0, 1, 0));
-        println!("bit_register.clock(0, 1, 1) = {}", bit_register.clock(0, 1, 1));
+        assert_eq!(bit_register.clock(1, 1, 0), 0);
+        assert_eq!(bit_register.clock(1, 1, 1), 1);
+    }
+    #[test]
+    fn test_register() {
+        let mut register = Register::new();
+        assert_eq!(register.clock([1; 16], 1, 0), [0; 16]);
+        assert_eq!(register.clock([1; 16], 1, 1), [1; 16]);
     }
 }
