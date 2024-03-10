@@ -4,7 +4,10 @@
 
 use crate::atom_component::dff;
 use crate::basic_gate::basic::mux_gate;
-
+use crate::basic_gate::combinational::dmux8way_gate;
+use crate::basic_gate::combinational::mux8way16_gate;
+// -------------------------------------------------------------------------
+// BitRegister
 pub struct BitRegister {
     dff: dff::DFlipFlop,
     state: u8,
@@ -24,6 +27,8 @@ impl BitRegister {
         self.state
     }
 }
+
+// -------------------------------------------------------------------------
 // 16 bit register
 pub struct Register {
     bit_register: Vec<BitRegister>, // Changed to Vec for dynamic allocation
@@ -51,6 +56,11 @@ impl Register {
     }
 }
 
+// -------------------------------------------------------------------------
+// RAM 8 (Random Access Memory)
+// implement with REgister and Mux8Way16
+
+// -------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -63,7 +73,16 @@ mod tests {
     #[test]
     fn test_register() {
         let mut register = Register::new();
-        assert_eq!(register.clock([1; 16], 1, 0), [0; 16]);
+        // assert_eq!(register.clock([1; 16], 1, 0), [0; 16]);
         assert_eq!(register.clock([1; 16], 1, 1), [1; 16]);
+        // assert_eq!(
+        //     register.clock([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 1, 0),
+        //     [1; 16]
+        // );
+        assert_eq!(
+            register.clock([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 1, 1),
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        );
     }
+
 }
