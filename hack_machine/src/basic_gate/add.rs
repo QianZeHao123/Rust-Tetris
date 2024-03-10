@@ -31,7 +31,7 @@ pub fn adder(a: [u8; 16], b: [u8; 16]) -> [u8; 16] {
 pub fn inc(input: [u8; 16]) -> [u8; 16] {
     let one = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let result = adder(input, one);
-    result
+    result //
 }
 
 #[cfg(test)]
