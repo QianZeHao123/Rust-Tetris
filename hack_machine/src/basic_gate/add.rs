@@ -28,6 +28,12 @@ pub fn adder(a: [u8; 16], b: [u8; 16]) -> [u8; 16] {
     result
 }
 
+pub fn inc(input: [u8; 16]) -> [u8; 16] {
+    let one = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let result = adder(input, one);
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -58,5 +64,13 @@ mod tests {
             adder([1; 16], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
             [0; 16]
         );
+    }
+    #[test]
+    fn test_inc() {
+        assert_eq!(
+            inc([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        );
+        assert_eq!(inc([1; 16]), [0; 16]);
     }
 }
