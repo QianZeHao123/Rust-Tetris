@@ -117,6 +117,68 @@ impl RAM8 {
     }
 }
 
+pub struct RAM64 {
+    ram8s: Vec<RAM8>,
+    output: [u8; 16],              // Current output state
+    read_address: Option<[u8; 6]>, // Stores the read address for the next cycle
+}
+
+impl RAM64 {
+    pub fn new() -> RAM64 {
+        let mut ram8s = Vec::with_capacity(8);
+        for _ in 0..8 {
+            ram8s.push(RAM8::new());
+        }
+
+        RAM64 {
+            ram8s,
+            output: [0; 16],    // Initialize with zeros
+            read_address: None, // Initialize without a read address
+        }
+    }
+
+    pub fn clock(&mut self, input: [u8; 16], load: u8, address: [u8; 6], clock: u8) {
+        let load_signals = dmux8way_gate(load, [address[3], address[4], address[5]]);
+
+        // Write to the appropriate register
+        for i in 0..8 {
+            // if load_signals[i] == 1 {
+            self.ram8s[i].clock(
+                input,
+                load_signals[i],
+                [address[0], address[1], address[2]],
+                clock,
+            );
+            // }
+        }
+
+        // If there was a read address from the previous cycle, use it to update the output
+        if let Some(read_address) = self.read_address {
+            self.output = self.read(read_address);
+        }
+
+        // Store the current address for reading in the next cycle
+        self.read_address = Some([
+            address[0], address[1], address[2], address[3], address[4], address[5],
+        ]);
+    }
+
+    // Separate read method to get the value from the specified address
+    pub fn read(&self, address: [u8; 6]) -> [u8; 16] {
+        mux8way16_gate(
+            self.ram8s[0].read([address[0], address[1], address[2]]),
+            self.ram8s[1].read([address[0], address[1], address[2]]),
+            self.ram8s[2].read([address[0], address[1], address[2]]),
+            self.ram8s[3].read([address[0], address[1], address[2]]),
+            self.ram8s[4].read([address[0], address[1], address[2]]),
+            self.ram8s[5].read([address[0], address[1], address[2]]),
+            self.ram8s[6].read([address[0], address[1], address[2]]),
+            self.ram8s[7].read([address[0], address[1], address[2]]),
+            [address[3], address[4], address[5]],
+        )
+    }
+}
+
 // -------------------------------------------------------------------------
 #[cfg(test)]
 mod tests {
@@ -182,5 +244,24 @@ mod tests {
             ram8.read([1, 0, 1]),
             [1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         );
+    }
+
+    // test RAM64
+    #[test]
+    fn test_ram64() {
+        let mut ram64 = RAM64::new();
+        ram64.clock([1; 16], 1, [0, 0, 0, 0, 0, 0], 1);
+        assert_eq!(ram64.read([0, 0, 0, 0, 0, 0]), [1; 16]);
+        ram64.clock(
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            1,
+            [1, 0, 1, 0, 0, 0],
+            1,
+        );
+        assert_eq!(
+            ram64.read([1, 0, 1, 0, 0, 0]),
+            [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        );
+        assert_eq!(ram64.read([0, 0, 0, 0, 0, 0]), [1; 16]);
     }
 }
