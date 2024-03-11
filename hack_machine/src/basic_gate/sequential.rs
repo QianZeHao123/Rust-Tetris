@@ -30,6 +30,7 @@ impl BitRegister {
 
 // -------------------------------------------------------------------------
 // 16 bit register
+
 pub struct Register {
     bit_register: Vec<BitRegister>, // Changed to Vec for dynamic allocation
     state: [u8; 16],
