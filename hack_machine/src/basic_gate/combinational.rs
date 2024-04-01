@@ -126,24 +126,43 @@ pub fn dmux4way_gate(input: u8, sel: [u8; 2]) -> [u8; 4] {
     result
 }
 
+// pub fn dmux8way_gate(input: u8, sel: [u8; 3]) -> [u8; 8] {
+//     let mut result = [0; 8];
+//     let (a, b) = dmux_gate(input, sel[0]);
+//     let (c, d) = dmux_gate(a, sel[1]);
+//     let (e, f) = dmux_gate(b, sel[1]);
+//     let (g, h) = dmux_gate(c, sel[2]);
+//     let (i, j) = dmux_gate(d, sel[2]);
+//     let (k, l) = dmux_gate(e, sel[2]);
+//     let (m, n) = dmux_gate(f, sel[2]);
+//     result[0] = g;
+//     result[1] = h;
+//     result[2] = i;
+//     result[3] = j;
+//     result[4] = k;
+//     result[5] = l;
+//     result[6] = m;
+//     result[7] = n;
+//     result
+// }
 pub fn dmux8way_gate(input: u8, sel: [u8; 3]) -> [u8; 8] {
-    let mut result = [0; 8];
+    // Split the input into two, using the most significant selection bit.
     let (a, b) = dmux_gate(input, sel[0]);
-    let (c, d) = dmux_gate(a, sel[1]);
-    let (e, f) = dmux_gate(b, sel[1]);
-    let (g, h) = dmux_gate(c, sel[2]);
-    let (i, j) = dmux_gate(d, sel[2]);
-    let (k, l) = dmux_gate(e, sel[2]);
-    let (m, n) = dmux_gate(f, sel[2]);
-    result[0] = g;
-    result[1] = h;
-    result[2] = i;
-    result[3] = j;
-    result[4] = k;
-    result[5] = l;
-    result[6] = m;
-    result[7] = n;
-    result
+    // Use dmux4way_gate to further split each of the two parts,
+    // using the remaining two selection bits.
+    let first_half = dmux4way_gate(a, [sel[1], sel[2]]);
+    let second_half = dmux4way_gate(b, [sel[1], sel[2]]);
+    // Combine the outputs of the two dmux4way_gates into a single 8-element array.
+    [
+        first_half[0],
+        first_half[1],
+        first_half[2],
+        first_half[3],
+        second_half[0],
+        second_half[1],
+        second_half[2],
+        second_half[3],
+    ]
 }
 
 #[cfg(test)]
