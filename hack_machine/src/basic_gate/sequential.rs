@@ -121,8 +121,8 @@ impl RAM8 {
 // -------------------------------------------------------------------------
 // RAM 64 (Random Access Memory)
 // implement with RAM8 and Mux8Way16
-// Read:  out(t) = RAM8[address(t)](t)
-// Write: If load(t-1) then RAM8[address(t-1)](t) = in(t-1)
+// Read:  out(t) = RAM64[address(t)](t)
+// Write: If load(t-1) then RAM64[address(t-1)](t) = in(t-1)
 
 pub struct RAM64 {
     ram8s: Vec<RAM8>,
@@ -182,6 +182,87 @@ impl RAM64 {
             self.ram8s[6].read([address[0], address[1], address[2]]),
             self.ram8s[7].read([address[0], address[1], address[2]]),
             [address[3], address[4], address[5]],
+        )
+    }
+}
+
+// -------------------------------------------------------------------------
+// RAM 512 (Random Access Memory)
+// implement with RAM64 and Mux8Way16
+// Read:  out(t) = RAM512[address(t)](t)
+// Write: If load(t-1) then RAM512[address(t-1)](t) = in(t-1)
+pub struct RAM512 {
+    ram64s: Vec<RAM64>,            // Contains 8 RAM64 modules
+    output: [u8; 16],              // Current output state
+    read_address: Option<[u8; 9]>, // Stores the read address for the next cycle
+}
+
+impl RAM512 {
+    pub fn new() -> RAM512 {
+        let mut ram64s = Vec::with_capacity(8);
+        for _ in 0..8 {
+            ram64s.push(RAM64::new()); // Initialize each RAM64 module
+        }
+
+        RAM512 {
+            ram64s,
+            output: [0; 16],    // Initialize with zeros
+            read_address: None, // Initialize without a read address
+        }
+    }
+
+    pub fn clock(&mut self, input: [u8; 16], load: u8, address: [u8; 9], clock: u8) {
+        let load_signals = dmux8way_gate(load, [address[6], address[7], address[8]]);
+
+        // Write to the appropriate RAM64 module
+        for i in 0..8 {
+            self.ram64s[i].clock(
+                input,
+                load_signals[i],
+                [
+                    address[0], address[1], address[2], address[3], address[4], address[5],
+                ],
+                clock,
+            );
+        }
+
+        // If there was a read address from the previous cycle, use it to update the output
+        if let Some(read_address) = self.read_address {
+            self.output = self.read(read_address);
+        }
+
+        // Store the current address for reading in the next cycle
+        self.read_address = Some(address);
+    }
+
+    // Separate read method to get the value from the specified address
+    pub fn read(&self, address: [u8; 9]) -> [u8; 16] {
+        mux8way16_gate(
+            self.ram64s[0].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[1].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[2].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[3].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[4].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[5].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[6].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            self.ram64s[7].read([
+                address[0], address[1], address[2], address[3], address[4], address[5],
+            ]),
+            [address[6], address[7], address[8]],
         )
     }
 }
