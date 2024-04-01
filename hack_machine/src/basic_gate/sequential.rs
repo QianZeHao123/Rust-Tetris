@@ -118,6 +118,12 @@ impl RAM8 {
     }
 }
 
+// -------------------------------------------------------------------------
+// RAM 64 (Random Access Memory)
+// implement with RAM8 and Mux8Way16
+// Read:  out(t) = RAM8[address(t)](t)
+// Write: If load(t-1) then RAM8[address(t-1)](t) = in(t-1)
+
 pub struct RAM64 {
     ram8s: Vec<RAM8>,
     output: [u8; 16],              // Current output state
