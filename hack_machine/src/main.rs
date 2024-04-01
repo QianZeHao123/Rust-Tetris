@@ -16,4 +16,5 @@ fn main() {
     let no = 1;
     let result = alu(x, y, zx, nx, zy, ny, f, no);
     println!("result = {:?}", result);
+    // basic_gate::sequential::RAM64::new();
 }
