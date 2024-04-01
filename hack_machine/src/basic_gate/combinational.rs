@@ -59,6 +59,27 @@ pub fn mux4way16_gate(
     result
 }
 
+// pub fn mux8way16_gate(
+//     input_a: [u8; 16],
+//     input_b: [u8; 16],
+//     input_c: [u8; 16],
+//     input_d: [u8; 16],
+//     input_e: [u8; 16],
+//     input_f: [u8; 16],
+//     input_g: [u8; 16],
+//     input_h: [u8; 16],
+//     sel: [u8; 3],
+// ) -> [u8; 16] {
+//     let ab = mux16_gate(input_a, input_b, sel[0]);
+//     let cd = mux16_gate(input_c, input_d, sel[0]);
+//     let ef = mux16_gate(input_e, input_f, sel[0]);
+//     let gh = mux16_gate(input_g, input_h, sel[0]);
+//     let abcd = mux16_gate(ab, cd, sel[1]);
+//     let efgh = mux16_gate(ef, gh, sel[1]);
+//     let result = mux16_gate(abcd, efgh, sel[2]);
+//     result
+// }
+
 pub fn mux8way16_gate(
     input_a: [u8; 16],
     input_b: [u8; 16],
@@ -70,14 +91,27 @@ pub fn mux8way16_gate(
     input_h: [u8; 16],
     sel: [u8; 3],
 ) -> [u8; 16] {
-    let ab = mux16_gate(input_a, input_b, sel[0]);
-    let cd = mux16_gate(input_c, input_d, sel[0]);
-    let ef = mux16_gate(input_e, input_f, sel[0]);
-    let gh = mux16_gate(input_g, input_h, sel[0]);
-    let abcd = mux16_gate(ab, cd, sel[1]);
-    let efgh = mux16_gate(ef, gh, sel[1]);
-    let result = mux16_gate(abcd, efgh, sel[2]);
-    result
+    // Use mux4way16_gate for the first 4 inputs, with the first 2 selection bits
+    let first_half = mux4way16_gate(
+        input_a,
+        input_b,
+        input_c,
+        input_d,
+        [sel[0], sel[1]], // Pass the first two selection bits
+    );
+
+    // Use mux4way16_gate for the last 4 inputs, with the first 2 selection bits
+    let second_half = mux4way16_gate(
+        input_e,
+        input_f,
+        input_g,
+        input_h,
+        [sel[0], sel[1]], // Pass the first two selection bits
+    );
+
+    // Use mux16_gate to choose between the outputs of the two mux4way16_gates,
+    // with the third selection bit
+    mux16_gate(first_half, second_half, sel[2])
 }
 
 pub fn dmux4way_gate(input: u8, sel: [u8; 2]) -> [u8; 4] {
@@ -190,7 +224,7 @@ mod tests {
     fn test_mux8way16_gate() {
         assert_eq!(
             mux8way16_gate(
-                [0; 16],
+                [1; 16],
                 [0; 16],
                 [0; 16],
                 [1; 16],
@@ -198,9 +232,9 @@ mod tests {
                 [0; 16],
                 [0; 16],
                 [0; 16],
-                [1, 1, 0]
+                [0, 1, 0]
             ),
-            [1; 16]
+            [0; 16]
         );
     }
 }
