@@ -33,16 +33,14 @@ CHIP CPU {
 
     PARTS:
 	//// Replace this comment with your code.
-    Mux16(a=instruction, b=ALUout, sel=instruction[15], out=Ain);
+    Mux16(a=instruction, b=ALUout, sel=instruction[15], out=InsOrALUoutout);
     
-    Not(in=instruction[15], out=a);
-    Or(a=a, b=instruction[5], out=loadA); 
-    ARegister(in=Ain, load=loadA, out=Aout, out[0..14]=addressM);
-    // Register(in=Ain, load=loadA, out=Aout, out[0..14]=addressM);
+    Not(in=instruction[15], out=AorC);
+    Or(a=AorC, b=instruction[5], out=loadA); 
+    ARegister(in=InsOrALUoutout, load=loadA, out=Aout, out[0..14]=addressM);
 
     And(a=instruction[15], b=instruction[4], out=loadD);
     DRegister(in=ALUout, load=loadD, out=Dout);
-    // Register(in=ALUout, load=loadD, out=Dout);
 
     Mux16(a=Aout, b=inM, sel=instruction[12], out=ALUin);
     ALU(x=Dout, y=ALUin, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6],
@@ -58,12 +56,12 @@ CHIP CPU {
     Not(in=ng, out=notng);
     And(a=notzr, b=notng, out=pos);
 
-    And(a=j1, b=ng, out=l1);
-    And(a=j2, b=zr, out=l2);
-    And(a=j3, b=pos, out=l3);
+    And(a=j1, b=ng, out=j1ng);
+    And(a=j2, b=zr, out=j2zr);
+    And(a=j3, b=pos, out=j3pos);
 
-    Or(a=l1, b=l2, out=o1);
-    Or(a=o1, b=l3, out=load);
+    Or(a=j1ng, b=j2zr, out=o1);
+    Or(a=o1, b=j3pos, out=load);
 
     PC(in=Aout, reset=reset, load=load, inc=true, out[0..14]=pc);
 }
