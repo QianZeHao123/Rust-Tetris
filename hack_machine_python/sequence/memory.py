@@ -74,6 +74,79 @@ class RAM8:
         
         return output
 
+class RAM64:
+    def __init__(self):
+        # Initialize 8 RAM8 components
+        self.ram8s = [RAM8() for _ in range(8)]
+
+    def update(self, data, address, load):
+        """Update or retrieve the state of the RAM64.
+        data: A list of 16 bits (0s and 1s) representing the input data.
+        address: A list of 6 bits (0s and 1s) representing the register address (0 to 63).
+        load: The load signal (0 or 1); when 1, the addressed register updates with the input data.
+        """
+        # Split the 6-bit address into two parts
+        ram8_index = address[0] * 4 + address[1] * 2 + address[2]  # Select which RAM8 (3 bits)
+        inner_address = address[3:]  # Select the register within RAM8 (3 bits)
+
+        output = []
+        for i in range(8):
+            if i == ram8_index:
+                output = self.ram8s[i].update(data, inner_address, load)
+            else:
+                self.ram8s[i].update([0]*16, inner_address, 0)  # Ensure non-selected RAM8 stays unchanged
+        
+        return output
+    
+class RAM512:
+    def __init__(self):
+        # Initialize 8 RAM64 components
+        self.ram64s = [RAM64() for _ in range(8)]
+
+    def update(self, data, address, load):
+        """Update or retrieve the state of the RAM512.
+        data: A list of 16 bits (0s and 1s) representing the input data.
+        address: A list of 9 bits (0s and 1s) representing the register address (0 to 511).
+        load: The load signal (0 or 1); when 1, the addressed register updates with the input data.
+        """
+        # Split the 9-bit address into two parts
+        ram64_index = address[0] * 4 + address[1] * 2 + address[2]  # Select which RAM64 (3 bits)
+        inner_address = address[3:]  # Select the register within RAM64 (6 bits)
+
+        output = []
+        for i in range(8):
+            if i == ram64_index:
+                output = self.ram64s[i].update(data, inner_address, load)
+            else:
+                self.ram64s[i].update([0]*16, inner_address, 0)  # Ensure non-selected RAM64 stays unchanged
+        
+        return output
+
+class RAM4K:
+    def __init__(self):
+        # Initialize 8 RAM512 components
+        self.ram512s = [RAM512() for _ in range(8)]
+
+    def update(self, data, address, load):
+        """Update or retrieve the state of the RAM4K.
+        data: A list of 16 bits (0s and 1s) representing the input data.
+        address: A list of 12 bits (0s and 1s) representing the register address (0 to 4095).
+        load: The load signal (0 or 1); when 1, the addressed register updates with the input data.
+        """
+        # Split the 12-bit address into two parts
+        ram512_index = address[0] * 4 + address[1] * 2 + address[2]  # Select which RAM512 (3 bits)
+        inner_address = address[3:]  # Select the register within RAM512 (9 bits)
+
+        output = []
+        for i in range(8):
+            if i == ram512_index:
+                output = self.ram512s[i].update(data, inner_address, load)
+            else:
+                self.ram512s[i].update([0]*16, inner_address, 0)  # Ensure non-selected RAM512 stays unchanged
+        
+        return output
+
+
 if __name__ == '__main__':
     # Flip-flop test
     print('-------------------------------------------------------------')
