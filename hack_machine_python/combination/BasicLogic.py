@@ -84,6 +84,23 @@ def MUX(a, b, sel):
         return a
     else:
         return b
+    
+def DMUX(input, sel):
+    """
+    Implements a Demultiplexor (DMUX).
+
+    Parameters:
+    input (int): Input to be demultiplexed (0 or 1).
+    sel (int): Selector input (0 or 1).
+
+    Returns:
+    tuple: A tuple containing the two outputs of the DMUX (input if sel is 0, 0 if sel is 1).
+    """
+    # Calculate the outputs based on the selector
+    if sel == 0:
+        return input, 0
+    else:
+        return 0, input
 
 
 if __name__ == '__main__':
@@ -132,4 +149,10 @@ if __name__ == '__main__':
     print(f'MUX(0, 1, 1) = {MUX(0, 1, 1)}')  # Output: 1
     print(f'MUX(1, 0, 1) = {MUX(1, 0, 1)}')  # Output: 0
     print(f'MUX(1, 1, 1) = {MUX(1, 1, 1)}')  # Output: 1
+    print('-------------------------------------------------------------')
+    print("Demultiplexor Test")
+    print(f'DMUX(0, 0) = {DMUX(0, 0)}')  # Output: (0, 0)
+    print(f'DMUX(0, 1) = {DMUX(0, 1)}')  # Output: (0, 0)
+    print(f'DMUX(1, 0) = {DMUX(1, 0)}')  # Output: (1, 0)
+    print(f'DMUX(1, 1) = {DMUX(1, 1)}')  # Output: (0, 1)
     print('-------------------------------------------------------------')
