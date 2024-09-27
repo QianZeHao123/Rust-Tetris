@@ -1,10 +1,11 @@
-#  ALU: Algebraic Logic Unit
-#  This module is a part of the combination logic circuit.
-#  It performs arithmetic and logical operations on two 16-bit inputs.
-#  The ALU has two 16-bit inputs, A and B, and a 6-bit control input (zx, nx, zy, ny, f, no).
-#  And the ALU has one 16-bit output, and two 1-bit outputs (zr, ng).
-
 '''
+ALU: Algebraic Logic Unit
+This module is a part of the combination logic circuit.
+It performs arithmetic and logical operations on two 16-bit inputs.
+The ALU has two 16-bit inputs, A and B, and a 6-bit control input (zx, nx, zy, ny, f, no).
+And the ALU has one 16-bit output, and two 1-bit outputs (zr, ng).
+
+
 ALU (Arithmetic Logic Unit):
 Computes out = one of the following functions:
                0, 1, -1,
@@ -102,25 +103,32 @@ def ALU(x, y, zx, nx, zy, ny, f, no):
 
     # Compute the zr and ng output bits
     zr = 1 if all(i == 0 for i in out) else 0
-    ng = out[15]
+    ng = out[0]
 
     return out, zr, ng
 
 
-if __name__ == '__main__':
-    print('-------------------------------------------------------------')
-    print("ALU test")
-    print('-------------------------------------------------------------')
+def test_ALU():
+    test_cases = [
+        # Add your test cases here
+        {"x": [0] * 16, "y": [1] * 16, "zx": 1, "nx": 0, "zy": 1, "ny": 0, "f": 1, "no": 0, "expected_out": [0] * 16, "expected_zr": 1, "expected_ng": 0},
+        {"x": [0] * 16, "y": [1] * 16, "zx": 1, "nx": 1, "zy": 1, "ny": 1, "f": 1, "no": 1, "expected_out": [0] * 15 + [1], "expected_zr": 0, "expected_ng": 0},
+        {"x": [0] * 16, "y": [1] * 16, "zx": 1, "nx": 1, "zy": 0, "ny": 0, "f": 1, "no": 0, "expected_out": [1] * 16, "expected_zr": 0, "expected_ng": 1},
+        {"x": [0] * 16, "y": [1] * 16, "zx": 0, "nx": 0, "zy": 1, "ny": 1, "f": 0, "no": 0, "expected_out": [0] * 16, "expected_zr": 1, "expected_ng": 0},
+        {"x": [0] * 16, "y": [1] * 16, "zx": 1, "nx": 1, "zy": 0, "ny": 0, "f": 0, "no": 0, "expected_out": [1] * 16, "expected_zr": 0, "expected_ng": 1},
+        # Additional test cases omitted for brevity
+    ]
 
-    # Test case 1
-    x = [0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0]
-    y = [1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1]
-    zx = 0
-    nx = 0
-    zy = 0
-    ny = 0
-    f = 1
-    no = 0
-    out, zr, ng = ALU(x, y, zx, nx, zy, ny, f, no)
-    print(f"Test case 1: ALU({x}, {y}, {zx}, {nx}, {zy}, {ny}, {f}, {no})")
-    print(f"Output: {out}")
+    for idx, case in enumerate(test_cases):
+        result_out, result_zr, result_ng = ALU(case["x"], case["y"], case["zx"], case["nx"], case["zy"], case["ny"], case["f"], case["no"])
+        
+        # Check if the output matches the expected values
+        if result_out == case["expected_out"] and result_zr == case["expected_zr"] and result_ng == case["expected_ng"]:
+            print(f"Test case {idx + 1}: Passed")
+        else:
+            print(f"Test case {idx + 1}: Failed")
+            print(f"Expected out: {case['expected_out']}, zr: {case['expected_zr']}, ng: {case['expected_ng']}")
+            print(f"Received out: {result_out}, zr: {result_zr}, ng: {result_ng}")
+
+if __name__ == "__main__":
+    test_ALU()
